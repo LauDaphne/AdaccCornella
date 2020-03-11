@@ -143,7 +143,7 @@ public class LoginActivity extends AppCompatActivity {
 
             loginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(final View v) {
                     AsyncTask.execute(new Runnable() {
                         @Override
                         public void run() {
@@ -190,13 +190,16 @@ public class LoginActivity extends AppCompatActivity {
                                         Intent i = new Intent(LoginActivity.this, MainActivity.class);
                                         startActivity(i);
                                     } else {
-                                        Toast.makeText(LoginActivity.this, "Inicio de sesion incorrecto", Toast.LENGTH_LONG).show();
+                                        Snackbar.make(v, "Inicio de sesion incorrecto",
+                                                Snackbar.LENGTH_LONG).setAction("Action", null).show();
                                     }
 
                                     responseBody.close();
                                     responseBodyReader.close();
                                     myConnection.disconnect();
                                 } else {
+                                    Snackbar.make(v, "Inicio de sesion incorrecto",
+                                            Snackbar.LENGTH_LONG).setAction("Action", null).show();
                                     // Error handling code goes here
                                     Log.println(Log.ASSERT, "Error", "Error");
                                 }
@@ -204,11 +207,13 @@ public class LoginActivity extends AppCompatActivity {
                             } catch (
                                     Exception e) {
                                 Log.println(Log.ASSERT, "Excepción", e.getMessage());
+                                Snackbar.make(v, "No se ha podido iniciar sesión correctamente. Vuelva a intentarlo.",
+                                        Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
                             }
                         }
                     });
-                    Snackbar.make(v, "Inicio de sesion incorrecto",
-                            Snackbar.LENGTH_LONG).setAction("Action", null).show();
+
                 }
             });
         }

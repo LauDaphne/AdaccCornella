@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/lblfecha"
+        android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@+id/txtNombrePerro"
         app:layout_constraintHorizontal_bias="0.87"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,6 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/lblnombre"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/txtNombrePerro"
         app:layout_constraintEnd_toStartOf="@+id/txtNombrePerro"
         app:layout_constraintHorizontal_bias="0.988"
@@ -63,11 +65,13 @@
         android:id="@+id/switch2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:text="@string/lblesterilizado"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calendarView" />
+        app:layout_constraintTop_toBottomOf="@+id/calendarView"
+        app:layout_constraintVertical_bias="0.06999999" />
 
     <Button
         android:id="@+id/bttnAceptarPerro"

@@ -26,6 +26,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,18 +38,29 @@ import es.studium.adacccornella.R;
 public class AltaPerroFragment extends Fragment {
 
     private AltaPerroViewModel galleryViewModel;
-    String actualdate;
-    String esterilizado;
+    String actualdate="";
+    String esterilizado="";
+    Long diaActual;
+    EditText txtNombrePerro;
+    CalendarView calendarioPerro;
+    Switch swtcPerro;
+
+    public void limpiarPerro(){
+        txtNombrePerro.setText("");
+        swtcPerro.setChecked(false);
+        calendarioPerro.setDate(diaActual);
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         galleryViewModel =
                 ViewModelProviders.of(this).get(AltaPerroViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_gallery, container, false);
+        View root = inflater.inflate(R.layout.fragment_altaperro, container, false);
 
-        final EditText txtNombrePerro = root.findViewById(R.id.txtNombrePerro);
-        final CalendarView calendarioPerro = root.findViewById(R.id.calendarView);
-        final Switch swtcPerro = root.findViewById(R.id.switch2);
+        txtNombrePerro = root.findViewById(R.id.txtNombrePerro);
+        calendarioPerro = root.findViewById(R.id.calendarView);
+        diaActual=calendarioPerro.getDate();
+        swtcPerro = root.findViewById(R.id.switch2);
         final Button bttnAceptarPerro = root.findViewById(R.id.bttnAceptarPerro);
         final Button bttnLimpiarPerro = root.findViewById(R.id.bttnLimpiarPerro);
 
@@ -56,26 +69,34 @@ public class AltaPerroFragment extends Fragment {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
                 month= month+1;
+                String mes, dia;
                 if(month<10){
-                    month = Integer.parseInt("0"+month);
+                    mes = "0"+month;
+                }else{
+                    mes=month+"";
                 }
-               actualdate = year + "/"+ month + "/"+ dayOfMonth;
+                if(dayOfMonth<10){
+                    dia = "0"+dayOfMonth;
+                }else{
+                    dia=dayOfMonth+"";
+                }
+               actualdate = year + "-"+ mes + "-"+ dia;
                 Log.println(Log.ASSERT, "Aviso", "La fecha es:" + actualdate);
             }
         });
 
+
+
         bttnLimpiarPerro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                txtNombrePerro.setText("");
-                swtcPerro.setChecked(false);
-                calendarioPerro.clearFocus();
+                limpiarPerro();
             }
         });
 
         bttnAceptarPerro.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
                 AsyncTask.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -87,14 +108,17 @@ public class AltaPerroFragment extends Fragment {
                             }else{
                                 esterilizado = "0";
                             }
+                            if(actualdate.isEmpty()){
+                                actualdate= new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                            }
                             String response = "";
                             HashMap<String, String> postDataParams = new
                                     HashMap<String, String>();
                             postDataParams.put("nombre", txtNombrePerro.getText().toString());
                             postDataParams.put("fecha", actualdate);
-                            postDataParams.put("esterilizadoAnimal", esterilizado);
+                            postDataParams.put("esterilizado", esterilizado);
                             URL url = new
-                                    URL("http://192.168.0.14/adacc/addac.php");
+                                    URL("http://192.168.0.14/adacc/adacc.php");
                             HttpURLConnection connection = (HttpURLConnection)
                                     url.openConnection();
                             connection.setReadTimeout(15000);
@@ -126,23 +150,31 @@ public class AltaPerroFragment extends Fragment {
                             {
                                 // Success
                                 Log.println(Log.ASSERT,"Resultado", "Registro insertado:"+response);
+                                limpiarPerro();
+                                Snackbar.make(view, "ALta realizada correctamente",
+                                        Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
                                 connection.disconnect();
                             }
                             else
                             {
+                                Snackbar.make(view, "No se ha podido realizar el alta correctamente. Vuelva a intentarlo.",
+                                        Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
                                 // Error handling code goes here
                                 Log.println(Log.ASSERT,"Error", "Error");
                             }
                         }
                         catch(Exception e)
                         {
+                            Snackbar.make(view, "No se ha podido realizar el alta correctamente. Vuelva a intentarlo.",
+                                    Snackbar.LENGTH_LONG)
+                                    .setAction("Action", null).show();
                             Log.println(Log.ASSERT,"Excepción", e.getMessage());
                         }
                     }
                 });
-                Snackbar.make(view, "Replace with your own action",
-                        Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
             }
             private String getPostDataString(HashMap<String, String> params)
                     throws UnsupportedEncodingException {
