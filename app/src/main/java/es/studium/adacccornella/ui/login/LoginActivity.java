@@ -28,26 +28,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import es.studium.adacccornella.MainActivity;
 import es.studium.adacccornella.R;
@@ -70,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
         final Button loginButton = findViewById(R.id.login);
+        final Button borrarButton = findViewById(R.id.borrarButton);
 
         if (isLogin) {
             Log.println(Log.ASSERT, "Aviso", "Entra en Login con isLogin true");
@@ -142,6 +132,15 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
 
+            borrarButton.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    usernameEditText.setText("");
+                    passwordEditText.setText("");
+                    swtchRecordar.setChecked(false);
+                }
+            });
+
             loginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -181,7 +180,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                     String correcto = result.getString("mensaje");
 
-                                    if (user.equals("Laura") & pass.equals("12345678")) {
+                                    if (correcto.equals("0")) {
                                         if (swtchRecordar.isChecked()) {
                                             SharedPreferences.Editor editor = sharedPref.edit();
                                             editor.putString("user", user);
@@ -193,70 +192,60 @@ public class LoginActivity extends AppCompatActivity {
                                     } else {
                                         Toast.makeText(LoginActivity.this, "Inicio de sesion incorrecto", Toast.LENGTH_LONG).show();
                                     }
+
+                                    responseBody.close();
+                                    responseBodyReader.close();
+                                    myConnection.disconnect();
+                                } else {
+                                    // Error handling code goes here
+                                    Log.println(Log.ASSERT, "Error", "Error");
                                 }
 
-                                responseBody.close();
-                                responseBodyReader.close();
-                                myConnection.disconnect();
-                            }
-                                else
-                            {
-                                // Error handling code goes here
-                                Log.println(Log.ASSERT, "Error", "Error");
+                            } catch (
+                                    Exception e) {
+                                Log.println(Log.ASSERT, "Excepción", e.getMessage());
                             }
                         }
-                            catch(
-                        Exception e)
-
-                        {
-                            Log.println(Log.ASSERT, "Excepción", e.getMessage());
-                        }
-                    }
-                });
-                    Snackbar.make(v,"Replace with your own action",
-                Snackbar.LENGTH_LONG)
-                        .
-
-                setAction("Action",null).
-
-                show();
-
-            });
-        }}
-        }
-
-        public static String md5 (String s){
-            final String MD5 = "MD5";
-            try {
-                // Create MD5 Hash
-                MessageDigest digest = java.security.MessageDigest.getInstance(MD5);
-                digest.update(s.getBytes());
-                byte messageDigest[] = digest.digest();
-
-                // Create Hex String
-                StringBuilder hexString = new StringBuilder();
-                for (byte aMessageDigest : messageDigest) {
-                    String h = Integer.toHexString(0xFF & aMessageDigest);
-                    while (h.length() < 2)
-                        h = "0" + h;
-                    hexString.append(h);
+                    });
+                    Snackbar.make(v, "Inicio de sesion incorrecto",
+                            Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 }
-                return hexString.toString();
-
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            }
-            return "";
+            });
         }
-
-        private void updateUiWithUser (LoggedInUserView model){
-            String welcome = getString(R.string.bienvenida) + model.getDisplayName();
-            // TODO : initiate successful logged in experience
-            Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
-        }
-
-        private void showLoginFailed (@StringRes Integer errorString){
-            Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
-        }
-
     }
+
+    public static String md5(String s) {
+        final String MD5 = "MD5";
+        try {
+            // Create MD5 Hash
+            MessageDigest digest = java.security.MessageDigest.getInstance(MD5);
+            digest.update(s.getBytes());
+            byte messageDigest[] = digest.digest();
+
+            // Create Hex String
+            StringBuilder hexString = new StringBuilder();
+            for (byte aMessageDigest : messageDigest) {
+                String h = Integer.toHexString(0xFF & aMessageDigest);
+                while (h.length() < 2)
+                    h = "0" + h;
+                hexString.append(h);
+            }
+            return hexString.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    private void updateUiWithUser(LoggedInUserView model) {
+        String welcome = getString(R.string.bienvenida) + model.getDisplayName();
+        // TODO : initiate successful logged in experience
+        Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
+    }
+
+    private void showLoginFailed(@StringRes Integer errorString) {
+        Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+    }
+
+}

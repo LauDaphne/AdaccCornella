@@ -25,4 +25,9 @@
     <string name="usuario_incorrecto">Usuario incorrecto</string>
     <string name="clave_incorrecta">Clave debe tener más de 5 caracteres</string>
     <string name="inicio_sesion_incorrecta">"Acceso denegado"</string>
+    <string name="lblfecha">Fecha</string>
+    <string name="lblnuevo_perro">NUEVO PERRO</string>
+    <string name="lblnombre">Nombre</string>
+    <string name="lblesterilizado">Esterilizado</string>
+    <string name="lblAceptar">ACEPTAR</string>
 </resources>
