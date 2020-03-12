@@ -38,17 +38,20 @@ import es.studium.adacccornella.R;
 public class AltaPerroFragment extends Fragment {
 
     private AltaPerroViewModel galleryViewModel;
-    String actualdate="";
+    static String actualdate="";
     String esterilizado="";
-    Long diaActual;
-    EditText txtNombrePerro;
-    CalendarView calendarioPerro;
-    Switch swtcPerro;
+    static Boolean altaRealizada = false;
+    static Long diaActual;
+    static EditText txtNombrePerro;
+    static CalendarView calendarioPerro;
+    static Switch swtcPerro;
 
-    public void limpiarPerro(){
+    public static void limpiarPerro(){
         txtNombrePerro.setText("");
         swtcPerro.setChecked(false);
         calendarioPerro.setDate(diaActual);
+        altaRealizada = false;
+        actualdate = "";
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -90,14 +93,14 @@ public class AltaPerroFragment extends Fragment {
         bttnLimpiarPerro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                limpiarPerro();
+                AltaPerroFragment.limpiarPerro();
             }
         });
 
         bttnAceptarPerro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                AsyncTask.execute(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         // All your networking logic
@@ -150,30 +153,39 @@ public class AltaPerroFragment extends Fragment {
                             {
                                 // Success
                                 Log.println(Log.ASSERT,"Resultado", "Registro insertado:"+response);
-                                limpiarPerro();
-                                Snackbar.make(view, "ALta realizada correctamente",
+                               /* Snackbar.make(view, "Alta realizada correctamente",
                                         Snackbar.LENGTH_LONG)
-                                        .setAction("Action", null).show();
+                                        .setAction("Action", null).show();*/
+                                altaRealizada=true;
+                                txtNombrePerro.setText("");
                                 connection.disconnect();
                             }
                             else
                             {
-                                Snackbar.make(view, "No se ha podido realizar el alta correctamente. Vuelva a intentarlo.",
+                               /* Snackbar.make(view, "No se ha podido realizar el alta correctamente. Vuelva a intentarlo.",
                                         Snackbar.LENGTH_LONG)
-                                        .setAction("Action", null).show();
+                                        .setAction("Action", null).show();*/
                                 // Error handling code goes here
                                 Log.println(Log.ASSERT,"Error", "Error");
                             }
                         }
                         catch(Exception e)
                         {
-                            Snackbar.make(view, "No se ha podido realizar el alta correctamente. Vuelva a intentarlo.",
+                          /* Snackbar.make(view, "No se ha podido realizar el alta correctamente. Vuelva a intentarlo.",
                                     Snackbar.LENGTH_LONG)
-                                    .setAction("Action", null).show();
+                                    .setAction("Action", null).show(); */
                             Log.println(Log.ASSERT,"Excepción", e.getMessage());
                         }
                     }
                 });
+                try{
+                    Thread.sleep(1500);
+                    if(altaRealizada) {
+                        AltaPerroFragment.limpiarPerro();
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
             }
             private String getPostDataString(HashMap<String, String> params)
